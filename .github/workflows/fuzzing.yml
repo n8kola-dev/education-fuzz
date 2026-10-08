@@ -37,7 +37,15 @@ jobs:
 
       - name: Run fuzzing
         run: |
-          $HOME/go/bin/ffuf || true
+          $HOME/go/bin/ffuf \
+            -u http://localhost:3000/rest/user/login \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"email":"FUZZ","password":"pass"}' \
+            -w SQL-Injection \
+            -mc 200 \
+            -o results.json -of json \
+            -noninteractive || true
 
       - name: Get Logs from Service
         run: |
@@ -49,3 +57,4 @@ jobs:
           name: security-reports-bundle
           path: |
             juice-logs.log
+            results.json
